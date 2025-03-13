@@ -12,7 +12,18 @@ export class Board {
         this.init();
     }
     init() {
-        let cards = JSON.parse(localStorage.getItem("cards")) || (localStorage.setItem("cards", JSON.stringify(defaultState, " ")) && defaultState);
+        let cards;
+        try {
+            cards = localStorage.getItem("cards");
+            if (!cards) {
+                cards = defaultState;
+            }
+            else {
+                cards = JSON.parse(cards);
+            }
+        } catch {
+            cards = defaultState;
+        }
         this.columns.forEach((column, index) => {
             cards[index].forEach(cardText => {
                 this.addCard(column.column.querySelector(".column-content"), cardText);
