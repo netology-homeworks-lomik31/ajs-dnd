@@ -11,6 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     window.addEventListener("beforeunload", () => {
-        // saveCards();
+        board.save();
     });
 });
