@@ -12,20 +12,19 @@ export class Board {
         this.init();
     }
     init() {
-        let cards;
         try {
-            cards = localStorage.getItem("cards");
-            if (!cards) {
-                cards = defaultState;
+            this.cards = localStorage.getItem("cards");
+            if (!this.cards) {
+                this.cards = defaultState;
             }
             else {
-                cards = JSON.parse(cards);
+                this.cards = JSON.parse(this.cards);
             }
         } catch {
-            cards = defaultState;
+            this.cards = defaultState;
         }
         this.columns.forEach((column, index) => {
-            cards[index].forEach(cardText => {
+            this.cards[index].forEach(cardText => {
                 this.addCard(column.column.querySelector(".column-content"), cardText);
             });
         });
@@ -35,7 +34,7 @@ export class Board {
         this.columns.forEach(column => {
             let column_cards = [];
             column.column.querySelectorAll(".card").forEach(card => {
-                column_cards.push(card.textContent);
+                column_cards.push(card.innerText.replace("✖️", ""));
             });
             cards.push(column_cards);
         });
