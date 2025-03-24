@@ -38,23 +38,31 @@ export class Card {
     }
 
     updateText() {
+        this.self.classList.add("new-card");
         let textarea = document.createElement("textarea");
         textarea.className = "new-card--text-input";
         textarea.placeholder = "Add a title for this card...";
-        textarea.addEventListener("blur", () => {
+        const onblur = () => {
             this.remove();
-        });
+        }
+        textarea.addEventListener("blur", onblur);
         textarea.addEventListener("input", () => {
             textarea.style.height = "auto";
             textarea.style.height = textarea.scrollHeight + "px";
         });
         textarea.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
+                textarea.removeEventListener("blur", onblur);
+                if (textarea.value === "") {
+                    this.remove();
+                    return;
+                }
                 if (e.shiftKey) return;
                 this.text = textarea.value;
                 const textNode = document.createTextNode(this.text);
-                this.self.insertBefore(textNode, this.self.firstChild);
+                this.self.appendChild(textNode);
                 textarea.remove();
+                this.self.classList.remove("new-card");
             } else if (e.key === "Escape") {
                 this.remove();
             }

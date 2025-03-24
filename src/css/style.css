@@ -135,9 +135,6 @@ body {
     padding: 12px;
     border-radius: 6px;
     box-sizing: border-box;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
-
-.card + .card-placeholder {
-    margin-top: 16px;
-}
-

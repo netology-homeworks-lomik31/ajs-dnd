@@ -44,11 +44,16 @@ export class Board {
         let card = new Card(parent, text);
         card.self.addEventListener("mousedown", (event) => {
             event.preventDefault();
+            if (card.self.classList.contains("new-card")) return;
             const rect = card.self.getBoundingClientRect();
-            document.querySelector("body").appendChild(card.self);
             card.self.classList.add("dragging-card");
             card.self.style.width = `${rect.width}px`;
             card.self.style.height = `${rect.height}px`;
+            this.placeholder = document.createElement("div");
+            this.placeholder.className = "card-placeholder";
+            this.placeholder.style.height = `${rect.height}px`;
+            this.placeholder.style.width = `${rect.width}px`;
+            card.self.after(this.placeholder);
             const onMove = (e) => {
                 this.dragCard(card, rect, event, e);
             }
@@ -59,11 +64,8 @@ export class Board {
                 card.self.removeEventListener("mouseup", onUp);
                 card.self.classList.remove("dragging-card");
                 if (this.placeholder) {
-                    card.self.style.left = "";
-                    card.self.style.top = "";
-                    card.self.style.width = "";
-                    card.self.style.height = "";
-                    this.placeholder.parentElement.insertBefore(card.self, this.placeholder);
+                    card.self.removeAttribute("style");
+                    this.placeholder.before(card.self);
                     this.placeholder.remove();
                 }
 
@@ -82,7 +84,8 @@ export class Board {
         let offsetY = eventClick.clientY - rect.y;
         card.self.style.left = `${eventMove.clientX - offsetX}px`;
         card.self.style.top = `${eventMove.clientY - offsetY}px`;
-        let findColumn = undefined;
+
+        let findColumn;
         for (let column of this.columns) {
             let rect = column.rect;
             if (eventMove.clientX > rect.left && eventMove.clientX < rect.right) {
@@ -92,28 +95,12 @@ export class Board {
         }
         if (findColumn === undefined) return;
 
-        if (!this.placeholder) {
-            this.placeholder = document.createElement("div");
-            this.placeholder.className = "card-placeholder";
-            this.placeholder.style.height = `${rect.height}px`;
-            this.placeholder.style.width = `${rect.width}px`;
-            // this.placeholder.remove();
-        }
-
         for (let card of findColumn.querySelectorAll(".card")) {
             let rect = card.getBoundingClientRect();
             if (eventMove.clientY > rect.top && eventMove.clientY < rect.bottom) {
-                if (eventMove.clientY > rect.top + rect.height / 2) {
-                    findColumn.querySelector(".column-content").insertBefore(this.placeholder, card.nextSibling);
-                } else {
-                    findColumn.querySelector(".column-content").insertBefore(this.placeholder, card);
-                }
+                card.before(this.placeholder);
                 return;
             }
-            else {
-                findColumn.querySelector(".column-content").appendChild(this.placeholder);
-            }
         }
-        findColumn.querySelector(".column-content").appendChild(this.placeholder);
     }
 }
